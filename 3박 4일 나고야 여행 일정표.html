@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>3박 4일 나고야 여행</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    --bg: #F3F4F0;
+    --paper: #FFFFFF;
+    --ink: #1F2433;
+    --ink-soft: #5B6174;
+    --ink-faint: #A2A7B6;
+    --line: #DDE0DA;
+    --indigo: #2E3F6E;
+    --indigo-soft: #E6EAF4;
+    --vermilion: #C4452B;
+    --vermilion-soft: #F8E6E1;
+    --moss: #5F7D5A;
+    --moss-soft: #E4EDE2;
+    --shadow: 0 1px 2px rgba(31,36,51,.06), 0 8px 24px rgba(31,36,51,.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #15181F;
+      --paper: #1E222B;
+      --ink: #E9EAEE;
+      --ink-soft: #A9AEBE;
+      --ink-faint: #666C7D;
+      --line: #2E333F;
+      --indigo: #9FB0E3;
+      --indigo-soft: #262D45;
+      --vermilion: #E8735B;
+      --vermilion-soft: #3C2420;
+      --moss: #9DC494;
+      --moss-soft: #22301F;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #15181F; --paper: #1E222B; --ink: #E9EAEE; --ink-soft: #A9AEBE; --ink-faint: #666C7D;
+    --line: #2E333F; --indigo: #9FB0E3; --indigo-soft: #262D45; --vermilion: #E8735B; --vermilion-soft: #3C2420;
+    --moss: #9DC494; --moss-soft: #22301F; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 28px 20px 80px; }
+
+  /* 헤더 */
+  header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 28px; }
+  h1 {
+    font-family: "Gowun Batang", "Nanum Myeongjo", serif;
+    font-weight: 700; font-size: clamp(30px, 4.5vw, 44px); line-height: 1.15; margin: 0;
+    letter-spacing: -0.01em;
+  }
+  h1[contenteditable]:focus { outline: none; box-shadow: 0 2px 0 var(--indigo); }
+  .sub { color: var(--ink-soft); margin: 6px 0 0; font-size: 14px; }
+  .tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  button {
+    font: inherit; font-size: 13px; font-weight: 500;
+    color: var(--ink); background: var(--paper); border: 1px solid var(--line);
+    border-radius: 999px; padding: 7px 14px; cursor: pointer;
+  }
+  button:hover { border-color: var(--indigo); color: var(--indigo); }
+  button:focus-visible { outline: 2px solid var(--indigo); outline-offset: 2px; }
+  button.danger:hover { border-color: var(--vermilion); color: var(--vermilion); }
+  .save-state { font-size: 12px; color: var(--ink-faint); min-width: 60px; }
+
+  /* 레이아웃 */
+  .grid { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 24px; align-items: start; }
+  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+
+  /* 일차 탭 */
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+  .tab {
+    border-radius: 10px 10px 0 0; border: 1px solid var(--line); border-bottom: none;
+    background: transparent; color: var(--ink-soft); padding: 9px 18px; font-size: 14px;
+  }
+  .tab.active { background: var(--paper); color: var(--indigo); font-weight: 700; border-color: var(--line); box-shadow: 0 -2px 0 var(--indigo) inset; }
+
+  .day { display: none; background: var(--paper); border: 1px solid var(--line); border-radius: 0 12px 12px 12px; box-shadow: var(--shadow); overflow: hidden; }
+  .day.active { display: block; }
+  .day-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 20px 12px; border-bottom: 1px solid var(--line); }
+  .day-title { font-family: "Gowun Batang", serif; font-size: 20px; font-weight: 700; margin: 0; flex: 1; }
+  .day-title[contenteditable]:focus { outline: none; box-shadow: 0 2px 0 var(--indigo); }
+  .day-head .hint { font-size: 12px; color: var(--ink-faint); white-space: nowrap; }
+
+  .table-scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; min-width: 640px; }
+  th {
+    text-align: left; font-size: 12px; font-weight: 500; color: var(--ink-soft);
+    padding: 10px 12px; border-bottom: 1px solid var(--line); background: var(--indigo-soft);
+  }
+  td { padding: 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  td .cell {
+    min-height: 40px; padding: 9px 12px; outline: none; white-space: pre-wrap; word-break: keep-all;
+  }
+  td .cell:empty::before { content: attr(data-ph); color: var(--ink-faint); }
+  td .cell:focus { background: var(--indigo-soft); box-shadow: inset 2px 0 0 var(--indigo); }
+  td.time { width: 110px; }
+  td.time .cell { font-variant-numeric: tabular-nums; color: var(--ink-soft); font-size: 13px; }
+  td.place .cell { font-weight: 500; }
+  td.cost { width: 110px; }
+  td.cost .cell { text-align: right; font-variant-numeric: tabular-nums; }
+  td.act { width: 86px; text-align: right; padding: 6px 8px 0 0; white-space: nowrap; }
+  .icon {
+    border: none; background: transparent; padding: 4px 5px; color: var(--ink-faint); font-size: 14px; line-height: 1; border-radius: 6px;
+    opacity: 0; transition: opacity .12s;
+  }
+  tr:hover .icon, tr:focus-within .icon { opacity: 1; }
+  .icon:hover { background: var(--indigo-soft); color: var(--indigo); }
+  .icon.del:hover { background: var(--vermilion-soft); color: var(--vermilion); }
+  @media (hover: none) { .icon { opacity: 1; } }
+  tr.empty td .cell { color: var(--ink-faint); }
+
+  .day-foot { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px 12px; border-top: 1px solid var(--line); }
+  .day-sum { font-size: 14px; color: var(--ink-soft); }
+  .day-sum b { color: var(--ink); font-variant-numeric: tabular-nums; }
+
+  .memo { padding: 14px 20px 18px; border-top: 1px dashed var(--line); }
+  .memo h3 { margin: 0 0 6px; font-size: 13px; font-weight: 500; color: var(--ink-soft); }
+  .memo .cell { min-height: 56px; padding: 10px 12px; border-radius: 8px; background: var(--moss-soft); outline: none; white-space: pre-wrap; }
+  .memo .cell:focus { box-shadow: 0 0 0 2px var(--moss); }
+  .memo .cell:empty::before { content: attr(data-ph); color: var(--ink-faint); }
+
+  /* 경비 패널 */
+  aside { position: sticky; top: calc(16px + env(safe-area-inset-top, 0px)); }
+  .panel { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); padding: 18px 20px; }
+  .panel h2 { font-family: "Gowun Batang", serif; font-size: 18px; margin: 0 0 12px; }
+  .exp-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+  .exp-row span:first-child { color: var(--ink-soft); }
+  .exp-row span:last-child { font-variant-numeric: tabular-nums; }
+  .exp-row.total { border-bottom: none; padding-top: 12px; font-size: 16px; font-weight: 700; }
+  .exp-row.total span:first-child { color: var(--ink); }
+  .exp-row.total span:last-child { color: var(--vermilion); }
+  .panel p.note { font-size: 12px; color: var(--ink-faint); margin: 12px 0 0; line-height: 1.5; }
+
+  .toast {
+    position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%) translateY(20px);
+    background: var(--ink); color: var(--bg); padding: 10px 18px; border-radius: 999px; font-size: 13px; opacity: 0; pointer-events: none; transition: all .2s;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media print {
+    body { background: #fff; }
+    .tools, .tabs, td.act, .day-foot button, .hint { display: none !important; }
+    .day { display: block !important; border-radius: 0; box-shadow: none; margin-bottom: 20px; page-break-inside: avoid; }
+    .grid { grid-template-columns: 1fr; }
+    aside { position: static; }
+    .icon { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1 id="title" contenteditable="true" spellcheck="false">3박 4일 나고야 여행</h1>
+      <p class="sub">칸을 누르면 바로 글을 고칠 수 있어요. 바뀐 내용은 이 브라우저에 자동으로 저장돼요.</p>
+    </div>
+    <div class="tools">
+      <span class="save-state" id="saveState"></span>
+      <button type="button" onclick="window.print()">인쇄</button>
+      <button type="button" class="danger" onclick="resetAll()">원본으로 되돌리기</button>
+    </div>
+  </header>
+
+  <div class="grid">
+    <main>
+      <div class="tabs" id="tabs"></div>
+      <div id="days"></div>
+    </main>
+    <aside>
+      <div class="panel">
+        <h2>경비</h2>
+        <div id="expenses"></div>
+        <p class="note">각 일차의 ‘비용’ 칸에 숫자를 적으면 자동으로 합산돼요. 단위는 자유롭게 (예: 12000).</p>
+      </div>
+    </aside>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const STORAGE_KEY = 'nagoya-itinerary-v1';
+const SLOTS = ['06:00-07:00','07:00-08:00','08:00-09:00','09:00-10:00','10:00-11:00','11:00-12:00','12:00-13:00','13:00-14:00','14:00-15:00','15:00-16:00','16:00-17:00','17:00-18:00','18:00-19:00','19:00-20:00','20:00-21:00','21:00-22:00','22:00-23:00','23:00-24:00','24:00-01:00'];
+const blank = t => ({ time: t, place: '', how: '', plan: '', cost: '' });
+
+const DEFAULT = {
+  title: '3박 4일 나고야 여행',
+  days: [
+    {
+      label: '1일차 · 12월 10일 목',
+      memo: '먹을 것: 아침 카페 토스트 / 장어덮밥 / 미소돈카츠\n챙길 것: 커피돈',
+      rows: [
+        { time: '07:00', place: '기상', how: '', plan: '', cost: '' },
+        { time: '08:00-09:00', place: '서울 김포공항 도착', how: '605번 신길1동새마을금고', plan: '', cost: '' },
+        { time: '11:10', place: '서울 김포공항에서 출발', how: '피치 항공 에어버스 A320', plan: '', cost: '' },
+        { time: '11:10-13:00', place: '나고야 주부 공항 제1터미널 도착', how: '', plan: '', cost: '' },
+        { time: '13:00-13:40', place: '입국 심사 및 이심 등록', how: '', plan: '', cost: '' },
+        { time: '13:40-16:40', place: '나고야역으로 이동', how: '', plan: '', cost: '' },
+        { time: '12:00-13:00', place: '나고야역에서 표 구매', how: '', plan: '', cost: '' },
+        { time: '13:00-14:00', place: '게로 온천 마을 출발', how: '히다 특급 열차', plan: '', cost: '' },
+        { time: '14:00-15:00', place: '게로 온천 체크인', how: '', plan: '', cost: '' },
+        ...SLOTS.slice(9).map(blank)
+      ]
+    },
+    {
+      label: '2일차 · 12월 11일 금',
+      memo: '미소카츠 저녁\n점심: 투어 가는 장소에서 맛집 찾기 (다카야마)',
+      rows: SLOTS.map(t => t === '09:00-10:00' ? { ...blank(t), place: '다카야마 도착' } : blank(t))
+    },
+    {
+      label: '3일차 · 12월 12일 토',
+      memo: '아침 토스트 / 점심 지브리파크 / 저녁 시내 장어덮밥',
+      rows: SLOTS.map(blank)
+    },
+    {
+      label: '4일차 · 12월 13일 일',
+      memo: '',
+      rows: SLOTS.map(blank)
+    }
+  ]
+};
+
+let data = load();
+let current = 0;
+
+function load() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) { const d = JSON.parse(raw); if (d && d.days) return d; }
+  } catch (e) {}
+  return JSON.parse(JSON.stringify(DEFAULT));
+}
+let saveTimer;
+function save() {
+  const st = document.getElementById('saveState');
+  st.textContent = '저장 중…';
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); st.textContent = '저장됨'; }
+    catch (e) { st.textContent = '저장 불가'; }
+  }, 300);
+}
+
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const num = v => { const n = parseFloat(String(v).replace(/[^\d.-]/g, '')); return isNaN(n) ? 0 : n; };
+const fmt = n => n.toLocaleString('ko-KR');
+const daySum = d => d.rows.reduce((a, r) => a + num(r.cost), 0);
+
+function cell(di, ri, key, ph) {
+  return `<div class="cell" contenteditable="true" spellcheck="false" data-ph="${ph}" data-d="${di}" data-r="${ri}" data-k="${key}">${esc(data.days[di].rows[ri][key])}</div>`;
+}
+
+function render() {
+  document.getElementById('title').textContent = data.title;
+  document.title = data.title;
+
+  document.getElementById('tabs').innerHTML = data.days.map((d, i) =>
+    `<button type="button" class="tab ${i === current ? 'active' : ''}" onclick="current=${i};render()">${esc(d.label.split('·')[0].trim())}</button>`
+  ).join('');
+
+  document.getElementById('days').innerHTML = data.days.map((d, di) => `
+    <section class="day ${di === current ? 'active' : ''}">
+      <div class="day-head">
+        <h2 class="day-title" contenteditable="true" spellcheck="false" data-label="${di}">${esc(d.label)}</h2>
+        <span class="hint">행 위에 마우스를 올리면 이동·삭제 버튼이 보여요</span>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>시간</th><th>장소</th><th>가는 법</th><th>일정</th><th>비용</th><th></th></tr></thead>
+          <tbody>
+            ${d.rows.map((r, ri) => `
+              <tr class="${(r.place || r.how || r.plan || r.cost) ? '' : 'empty'}">
+                <td class="time">${cell(di, ri, 'time', '시간')}</td>
+                <td class="place">${cell(di, ri, 'place', '장소')}</td>
+                <td class="how">${cell(di, ri, 'how', '교통·이동')}</td>
+                <td class="plan">${cell(di, ri, 'plan', '메모')}</td>
+                <td class="cost">${cell(di, ri, 'cost', '0')}</td>
+                <td class="act">
+                  <button type="button" class="icon" title="위로" onclick="moveRow(${di},${ri},-1)">↑</button>
+                  <button type="button" class="icon" title="아래로" onclick="moveRow(${di},${ri},1)">↓</button>
+                  <button type="button" class="icon" title="아래에 행 추가" onclick="addRow(${di},${ri + 1})">＋</button>
+                  <button type="button" class="icon del" title="삭제" onclick="delRow(${di},${ri})">✕</button>
+                </td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+      <div class="day-foot">
+        <button type="button" onclick="addRow(${di})">＋ 행 추가</button>
+        <div class="day-sum">이 날 경비 <b>${fmt(daySum(d))}</b></div>
+      </div>
+      <div class="memo">
+        <h3>메모 · 먹을 것</h3>
+        <div class="cell" contenteditable="true" spellcheck="false" data-ph="가고 싶은 식당, 챙길 것 등" data-memo="${di}">${esc(d.memo)}</div>
+      </div>
+    </section>`).join('');
+
+  renderExpenses();
+}
+
+function renderExpenses() {
+  const total = data.days.reduce((a, d) => a + daySum(d), 0);
+  document.getElementById('expenses').innerHTML =
+    data.days.map(d => `<div class="exp-row"><span>${esc(d.label.split('·')[0].trim())}</span><span>${fmt(daySum(d))}</span></div>`).join('') +
+    `<div class="exp-row total"><span>총합</span><span>${fmt(total)}</span></div>`;
+  document.querySelectorAll('.day').forEach((el, i) => {
+    const b = el.querySelector('.day-sum b'); if (b) b.textContent = fmt(daySum(data.days[i]));
+  });
+}
+
+function addRow(di, at) {
+  const rows = data.days[di].rows;
+  const idx = at === undefined ? rows.length : at;
+  rows.splice(idx, 0, blank(''));
+  save(); render();
+  const el = document.querySelector(`.cell[data-d="${di}"][data-r="${idx}"][data-k="time"]`);
+  if (el) el.focus();
+}
+function delRow(di, ri) {
+  const r = data.days[di].rows[ri];
+  if ((r.place || r.how || r.plan) && !confirm('이 행을 삭제할까요?')) return;
+  data.days[di].rows.splice(ri, 1);
+  save(); render();
+}
+function moveRow(di, ri, dir) {
+  const rows = data.days[di].rows, j = ri + dir;
+  if (j < 0 || j >= rows.length) return;
+  [rows[ri], rows[j]] = [rows[j], rows[ri]];
+  save(); render();
+}
+function resetAll() {
+  if (!confirm('모든 수정 내용을 지우고 원본 일정표로 되돌릴까요?')) return;
+  try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+  data = JSON.parse(JSON.stringify(DEFAULT));
+  render(); toast('원본으로 되돌렸어요');
+}
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+// 편집 반영 (재렌더 없이 데이터만 갱신)
+document.addEventListener('input', e => {
+  const el = e.target;
+  if (!el.isContentEditable) return;
+  if (el.id === 'title') { data.title = el.textContent.trim(); document.title = data.title; }
+  else if (el.dataset.label !== undefined) {
+    data.days[el.dataset.label].label = el.textContent.trim();
+    document.querySelectorAll('.tab')[el.dataset.label].textContent = data.days[el.dataset.label].label.split('·')[0].trim();
+    renderExpenses();
+  }
+  else if (el.dataset.memo !== undefined) data.days[el.dataset.memo].memo = el.innerText;
+  else if (el.dataset.k) {
+    data.days[el.dataset.d].rows[el.dataset.r][el.dataset.k] = el.innerText.replace(/\n$/, '');
+    if (el.dataset.k === 'cost') renderExpenses();
+    el.closest('tr').classList.toggle('empty', !Object.values(data.days[el.dataset.d].rows[el.dataset.r]).slice(1).some(Boolean));
+  }
+  save();
+});
+// Enter: 줄바꿈 대신 다음 칸으로 (Shift+Enter 는 줄바꿈)
+document.addEventListener('keydown', e => {
+  const el = e.target;
+  if (e.key === 'Enter' && !e.shiftKey && el.isContentEditable && el.dataset.k) {
+    e.preventDefault();
+    const cells = [...document.querySelectorAll('.day.active .cell[data-k]')];
+    const i = cells.indexOf(el);
+    if (cells[i + 5]) cells[i + 5].focus(); else addRow(+el.dataset.d);
+  }
+});
+
+render();
+</script>
+</body>
+</html>
